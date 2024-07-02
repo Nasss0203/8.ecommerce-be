@@ -4,5 +4,6 @@ const { asyncHandler } = require('../../auth/checkAuth')
 const router = express.Router()
 
 router.post('/auth/signup', asyncHandler(authController.signUp))
+router.post('/auth/login', asyncHandler(authController.login))
 
 module.exports = router
