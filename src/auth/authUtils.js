@@ -10,7 +10,7 @@ const createTokenPair = async (payload, publicKey, privateKey) => {
             expiresIn: '7 days'
         })
 
-        jwt.verify(accessToken, refreshToken, (err, decode) => {
+        jwt.verify(accessToken, publicKey, (err, decode) => {
             if (err) {
                 console.log(`Error verify error::`, err)
             } else {
@@ -22,7 +22,6 @@ const createTokenPair = async (payload, publicKey, privateKey) => {
         return error
     }
 }
-
 
 module.exports = {
     createTokenPair

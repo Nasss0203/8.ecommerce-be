@@ -22,5 +22,20 @@ require('./database/init.mongo')
 app.use('/', require('./routes/index'))
 
 //handling error
+app.use((res, req, next) => {
+    const error = new Error('Not Found')
+    error.status = 404
+    next(error)
+})
+
+app.use((error, res, req, next) => {
+    const statusCode = error.status || 500
+    return req.status(statusCode).json({
+        status: 'Error',
+        code: statusCode,
+        message: error.message || "Internal Server Error"
+    })
+})
+
 
 module.exports = app

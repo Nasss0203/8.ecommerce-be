@@ -1,13 +1,15 @@
+const { CREATED } = require("../core/success.response")
 const AuthService = require("../services/auth.service")
 
 class AuthController {
     signUp = async (req, res, next) => {
-        try {
-            console.log(`[P]:::signUp`, req.body)
-            return res.status(201).json(await AuthService.signUp(req.body))
-        } catch (error) {
-            next(error)
-        }
+        new CREATED({
+            message: 'Registered OK!',
+            metadata: await AuthService.signUp(req.body),
+            options: {
+                limit: 10
+            }
+        }).send(res)
     }
 }
 
