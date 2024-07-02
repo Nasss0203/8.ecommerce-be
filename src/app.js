@@ -9,14 +9,17 @@ const compression = require('compression')
 app.use(morgan('dev'))
 app.use(helmet())
 app.use(compression())
+app.use(express.json())
+app.use(express.urlencoded({
+    extended: true
+}))
+
 
 //init db
 require('./database/init.mongo')
 
 //init route
-app.get('', (req, res, next) => {
-
-})
+app.use('/', require('./routes/index'))
 
 //handling error
 
