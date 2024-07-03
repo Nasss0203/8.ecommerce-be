@@ -20,6 +20,7 @@ let keyTokenSchema = new Schema({
     refreshToken: {
         type: String,
         required: true,
+        default: ''
     },
     refreshTokensUsed: {
         type: Array,

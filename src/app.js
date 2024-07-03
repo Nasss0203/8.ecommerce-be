@@ -4,6 +4,7 @@ const app = express()
 const morgan = require('morgan')
 const { default: helmet } = require('helmet')
 const compression = require('compression')
+const cors = require('cors')
 
 //init middleware
 app.use(morgan('dev'))
@@ -12,6 +13,12 @@ app.use(compression())
 app.use(express.json())
 app.use(express.urlencoded({
     extended: true
+}))
+app.use(cors({
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
 }))
 
 
@@ -33,6 +40,7 @@ app.use((error, res, req, next) => {
     return req.status(statusCode).json({
         status: 'Error',
         code: statusCode,
+        stack: error.stack, //debug
         message: error.message || "Internal Server Error"
     })
 })

@@ -39,11 +39,10 @@ class AuthService {
 
         // 4 - generate tokens
         const tokens = await createTokenPair({ userId, email }, publicKey, privateKey)
-        console.log('tokens: ', tokens);
 
         await KeyTokenService.createKeyToken({
             userId,
-            refreshToken: tokens.accessToken,
+            refreshToken: tokens.refreshToken,
             privateKey, publicKey
         })
 
@@ -76,8 +75,11 @@ class AuthService {
 
             const keyStore = await KeyTokenService.createKeyToken({
                 userId: newAuth._id,
-                publicKey, privateKey
+                publicKey,
+                privateKey
             })
+            console.log('keyStore: ', keyStore);
+
 
             if (!keyStore) {
                 return {
@@ -103,6 +105,43 @@ class AuthService {
             metadata: null
         }
     }
+
+    static logout = async (keyStore) => {
+        const delKey = await KeyTokenService.removeKeyById(keyStore._id)
+        return delKey
+    }
+
+    static hadlerRefreshToken = async ({ keyStore, user, refreshToken }) => {
+        const { userId, email } = user
+        if (keyStore.refreshTokensUsed.includes(refreshToken)) {
+            await KeyTokenService.deleteKeyById(userId)
+            throw new createError(403, 'Something wrong happend!! Please relogin')
+        }
+
+        if (keyStore.refreshToken !== refreshToken) throw new createError(401, 'Shop not registered')
+
+        const foundAuth = await findByEmail({ email })
+        if (!foundAuth) throw new createError(401, 'Auth not registered')
+
+        //creata 1 cặp token
+        const tokens = await createTokenPair({ userId, email }, keyStore.publicKey, keyStore.privateKey)
+
+        await keyStore.updateOne({
+            $set: {
+                refreshToken: tokens.refreshToken
+            },
+            $addToSet: {
+                refreshTokensUsed: refreshToken
+            }
+        })
+
+        return {
+            user,
+            tokens
+        }
+    }
+
+
 }
 
 module.exports = AuthService

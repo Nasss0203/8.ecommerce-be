@@ -17,6 +17,24 @@ class AuthController {
             metadata: await AccessService.login(req.body)
         }).send(res)
     }
+
+    logout = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Logout success!',
+            metadata: await AccessService.logout(req.keyStore)
+        }).send(res)
+    }
+
+    refreshToken = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Get toen success!',
+            metadata: await AccessService.hadlerRefreshToken({
+                refreshToken: req.refreshToken,
+                user: req.user,
+                keyStore: req.keyStore
+            })
+        }).send(res)
+    }
 }
 
 module.exports = new AuthController()
