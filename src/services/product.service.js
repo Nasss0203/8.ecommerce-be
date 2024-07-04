@@ -1,5 +1,6 @@
 const { product, phone } = require("../models/product.model");
-const createError = require('http-errors')
+const createError = require('http-errors');
+const { uploadImageFromLocal } = require("./upload.service");
 
 
 class ProductFactory {
