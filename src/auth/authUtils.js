@@ -6,7 +6,7 @@ const { findByUserId } = require('../services/key.service')
 const HEADER = {
     API_KEY: 'x-api-key',
     CLIENT_ID: 'x-client-id',
-    AUTHORIZATION: 'authorization',
+    AUTHORIZATION: 'Authorization',
     REFRESHTOKEN: "x-rtoken-id"
 }
 
@@ -76,7 +76,8 @@ const authentication = asyncHandler(async (req, res, next) => {
         req.keyStore = keyStore
         return next()
     } catch (error) {
-        throw error
+        console.error('Authentication Error:', error.message);
+        next(error);
     }
 })
 

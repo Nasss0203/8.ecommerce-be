@@ -7,6 +7,7 @@ const { getInforData } = require('../utils')
 const { BadRequestError, AuthFailureError } = require('../core/error.response')
 const { findByEmail } = require('./auth.service')
 const createError = require('http-errors')
+const { registerValidation, loginValidation } = require('../validation/auth.validation')
 
 const RoleAuth = {
     SHOP: 'SHOP',
@@ -23,6 +24,8 @@ class AuthService {
         5 - get data return login
       */
     static login = async ({ email, password, refreshToken = null }) => {
+        await loginValidation.validateAsync({ email, password })
+
         // 1 - Check email in db
         const foundAuth = await findByEmail({ email })
         if (!foundAuth) throw new createError(400, 'Shop not registered')
@@ -53,7 +56,10 @@ class AuthService {
         }
     }
 
-    static signUp = async ({ name, email, password }) => {
+    static register = async ({ name, email, password }) => {
+        // Validate input data
+        await registerValidation.validateAsync({ email, name, password })
+
         //step 1: check email exists
         const holderShop = await authModel.findOne({ email }).lean()
         if (holderShop) {

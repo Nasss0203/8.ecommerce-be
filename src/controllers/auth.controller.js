@@ -2,10 +2,10 @@ const { CREATED, SuccessResponse } = require("../core/success.response")
 const AccessService = require("../services/access.service")
 
 class AuthController {
-    signUp = async (req, res, next) => {
+    register = async (req, res, next) => {
         new CREATED({
             message: 'Registered OK!',
-            metadata: await AccessService.signUp(req.body),
+            metadata: await AccessService.register(req.body),
             options: {
                 limit: 10
             }

@@ -8,16 +8,21 @@ let authSchema = new mongoose.Schema({
     name: {
         type: String,
         trim: true,
-        maxLength: 150
+        maxLength: [150, 'Name cannot exceed 150 characters'],
+        minLength: [3, 'Name must be at least 3 characters long'],
+        required: [true, 'Name is required']
     },
     email: {
         type: String,
         trim: true,
         unique: true,
+        required: [true, 'Email is required'],
+        match: [/.+\@.+\..+/, 'Please fill a valid email address']
     },
     password: {
         type: String,
-        required: true,
+        required: [true, 'Password is required'],
+        minLength: [8, 'Password must be at least 8 characters long']
     },
     status: {
         type: String,
