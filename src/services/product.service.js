@@ -1,6 +1,6 @@
 const { product, electronic } = require("../models/product.model");
 const createError = require('http-errors');
-const { publishProductByAuth, unPublishProductByAuth, findAllDraftsForShop, findAllPublishForShop } = require("../models/repo/product.repo");
+const { publishProductByAuth, unPublishProductByAuth, findAllDraftsForShop, findAllPublishForShop, searchProductByUser } = require("../models/repo/product.repo");
 
 
 class ProductFactory {
@@ -39,11 +39,16 @@ class ProductFactory {
         return await findAllPublishForShop({ query, limit, skip })
     }
 
+    //search
+    static async searchProductByUser({ keySearch }) {
+        return await searchProductByUser({ keySearch })
+    }
 }
 
 class ProductService {
-    constructor({ product_name, product_thumb, product_image = [], product_quantity, product_category, product_attributes, product_auth, product_price }) {
+    constructor({ product_name, product_thumb, product_image = [], product_quantity, product_category, product_attributes, product_auth, product_price, product_description }) {
         this.product_name = product_name;
+        this.product_description = product_description;
         this.product_thumb = product_thumb;
         this.product_price = product_price;
         this.product_image = product_image;

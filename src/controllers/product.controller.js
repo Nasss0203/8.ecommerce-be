@@ -49,5 +49,12 @@ class ProductController {
             })
         }).send(res)
     }
+
+    searchProductByUser = async (req, res, next) => {
+        new SuccessResponse({
+            message: 'Search Product Success!',
+            metadata: await ProductService.searchProductByUser(req.params)
+        }).send(res)
+    }
 }
 module.exports = new ProductController()

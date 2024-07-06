@@ -9,6 +9,7 @@ const COLLECTION_NAME = 'Products'
 let productSchema = new mongoose.Schema({
     product_name: { type: String, required: true },
     product_thumb: { type: String, required: true },
+    product_description: { type: String, },
     product_price: { type: Number, required: true },
     product_image: { type: [String], default: [''] },
     product_slug: String,
