@@ -1,6 +1,6 @@
 const { product, electronic } = require("../models/product.model");
 const createError = require('http-errors');
-const { publishProductByAuth, unPublishProductByAuth, findAllDraftsForShop, findAllPublishForShop, searchProductByUser } = require("../models/repo/product.repo");
+const { publishProductByAuth, unPublishProductByAuth, findAllDraftsForShop, findAllPublishForShop, searchProductByUser, findAllProducts, findProductById } = require("../models/repo/product.repo");
 
 
 class ProductFactory {
@@ -42,6 +42,14 @@ class ProductFactory {
     //search
     static async searchProductByUser({ keySearch }) {
         return await searchProductByUser({ keySearch })
+    }
+
+    static async findAllProducts({ limit = 50, sort = 'ctime', page = 1, filter = { isPublished: true } }) {
+        return await findAllProducts({ limit, sort, filter, page, select: ['product_name', 'product_price', 'product_thumb'] })
+    }
+
+    static async findProductById({ product_id }) {
+        return await findProductById({ product_id, unSelect: ['__v'] })
     }
 }
 
