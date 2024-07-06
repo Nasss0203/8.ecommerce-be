@@ -1,6 +1,6 @@
-const { product, phone } = require("../models/product.model");
+const { product, electronic } = require("../models/product.model");
 const createError = require('http-errors');
-const { uploadImageFromLocal } = require("./upload.service");
+const { publishProductByAuth, unPublishProductByAuth, findAllDraftsForShop, findAllPublishForShop } = require("../models/repo/product.repo");
 
 
 class ProductFactory {
@@ -12,10 +12,33 @@ class ProductFactory {
 
     static async createProduct(type, payload) {
         const productClass = ProductFactory.productRegistry[type]
+        console.log('productClass: ', productClass);
         if (!productClass) throw new createError(400, (`Invalid Product Types ${type}`))
 
         return new productClass(payload).createProduct()
     }
+
+
+    //PUT
+    static async publishProductByAuth({ product_auth, product_id }) {
+        return await publishProductByAuth({ product_auth, product_id })
+    }
+    static async unPublishProductByAuth({ product_auth, product_id }) {
+        return await unPublishProductByAuth({ product_auth, product_id })
+    }
+
+
+    //query
+    static async findAllDraftsForShop({ product_auth, limit = 50, skip = 0 }) {
+        const query = { product_auth, isDraft: true }
+        return await findAllDraftsForShop({ query, limit, skip })
+    }
+
+    static async findAllPublishForShop({ product_auth, limit = 50, skip = 0 }) {
+        const query = { product_auth, isPublished: true }
+        return await findAllPublishForShop({ query, limit, skip })
+    }
+
 }
 
 class ProductService {
@@ -35,9 +58,9 @@ class ProductService {
     }
 }
 
-class Phones extends ProductService {
+class Electronics extends ProductService {
     async createProduct() {
-        const newPhone = await phone.create({
+        const newPhone = await electronic.create({
             ...this.product_attributes,
             product_auth: this.product_auth
         })
@@ -50,6 +73,6 @@ class Phones extends ProductService {
     }
 }
 
-ProductFactory.registerProductType('Phones', Phones)
+ProductFactory.registerProductType('Electronics', Electronics)
 
 module.exports = ProductFactory

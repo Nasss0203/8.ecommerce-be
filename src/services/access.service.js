@@ -27,18 +27,18 @@ class AuthService {
         await loginValidation.validateAsync({ email, password })
 
         // 1 - Check email in db
-        const foundAuth = await findByEmail({ email })
-        if (!foundAuth) throw new createError(400, 'Shop not registered')
+        const foundShop = await findByEmail({ email })
+        if (!foundShop) throw new createError(400, 'Shop not registered')
 
         //2. Match password 
-        const match = bcrypt.compare(password, foundAuth.password)
+        const match = bcrypt.compare(password, foundShop.password)
         if (!match) throw new createError(401, 'Authentication error')
 
         //3. create accessToken and refreshToken and save 
         const publicKey = crypto.randomBytes(64).toString('hex')
         const privateKey = crypto.randomBytes(64).toString('hex')
 
-        const { _id: userId } = foundAuth
+        const { _id: userId } = foundShop
 
         // 4 - generate tokens
         const tokens = await createTokenPair({ userId, email }, publicKey, privateKey)
@@ -51,7 +51,7 @@ class AuthService {
 
         // 5 - get data return login
         return {
-            data: getInforData({ fields: ['_id', 'name', 'email'], object: foundAuth }),
+            data: getInforData({ fields: ['_id', 'name', 'email'], object: foundShop }),
             tokens
         }
     }
@@ -126,8 +126,8 @@ class AuthService {
 
         if (keyStore.refreshToken !== refreshToken) throw new createError(401, 'Shop not registered')
 
-        const foundAuth = await findByEmail({ email })
-        if (!foundAuth) throw new createError(401, 'Auth not registered')
+        const foundShop = await findByEmail({ email })
+        if (!foundShop) throw new createError(401, 'Auth not registered')
 
         //creata 1 cặp token
         const tokens = await createTokenPair({ userId, email }, keyStore.publicKey, keyStore.privateKey)

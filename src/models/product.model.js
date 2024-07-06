@@ -13,7 +13,7 @@ let productSchema = new mongoose.Schema({
     product_image: { type: [String], default: [''] },
     product_slug: String,
     product_quantity: { type: Number, required: true },
-    product_category: { type: String, required: true, enum: ['Phones', 'Laptops', 'Tablets'] },
+    product_category: { type: String, required: true, enum: ['Electronics', 'Laptops', 'Tablets'] },
     product_attributes: { type: Schema.Types.Mixed, required: true },
     product_auth: { type: Schema.Types.ObjectId, ref: 'Auth' },
     product_ratingAverage: {
@@ -40,19 +40,19 @@ productSchema.pre('save', function (next) {
     next()
 })
 
-const phoneSchema = new Schema({
-    phone_brand: { type: String, required: true },
-    phone_ram: { type: Number, required: true },
-    phone_screen: { type: Number, required: true },
-    phone_data: { type: Number, required: true },
+const electronicSchema = new Schema({
+    brand: { type: String, required: true },
+    ram: { type: Number, required: true },
+    screen: { type: Number, required: true },
+    data: { type: Number, required: true },
     product_auth: { type: Schema.Types.ObjectId, ref: 'Auth' },
 }, {
     timestamps: true,
-    collection: 'phones'
+    collection: 'electronics'
 })
 
 //Export the model
 module.exports = {
     product: model(DOCUMENT_NAME, productSchema),
-    phone: model('Phones', phoneSchema)
+    electronic: model('Electronics', electronicSchema)
 }
