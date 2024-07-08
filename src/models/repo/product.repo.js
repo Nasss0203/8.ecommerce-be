@@ -67,14 +67,18 @@ const findProductById = async ({ product_id, unSelect }) => {
     return await product.findById(product_id).select(unSetSelectData(unSelect))
 }
 
+const updateProductById = async ({ productId, payload, model, isNew = true }) => {
+    return await model.findByIdAndUpdate(productId, payload, {
+        new: isNew
+    })
+}
+
 
 const queryProduct = async ({ query, limit, skip }) => {
     return await product.find(query)
         .populate('product_auth', 'name email -_id')
         .sort({ updateAt: -1 }).skip(skip).limit(limit).lean().exec()
 }
-
-
 
 module.exports = {
     publishProductByAuth,
@@ -83,5 +87,6 @@ module.exports = {
     findAllDraftsForShop,
     searchProductByUser,
     findAllProducts,
-    findProductById
+    findProductById,
+    updateProductById
 }

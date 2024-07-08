@@ -14,6 +14,7 @@ router.use(authentication)
 router.post('/', asyncHandler(productController.createProduct))
 router.post('/publish/:id', asyncHandler(productController.publishProductByAuth))
 router.post('/unpublish/:id', asyncHandler(productController.unPublishProductByAuth))
+router.patch('/:productId', asyncHandler(productController.updateProduct))
 
 //query
 router.get('/drafts/all', asyncHandler(productController.findAllDraftsForShop))
