@@ -10,9 +10,7 @@ const createError = require('http-errors')
 const { registerValidation, loginValidation } = require('../validation/auth.validation')
 
 const RoleAuth = {
-    SHOP: 'SHOP',
-    WRITER: 'WRITER',
-    EDITOR: 'EDITOR'
+    ADMIN: 'ADMIN',
 }
 
 class AuthService {
@@ -51,7 +49,7 @@ class AuthService {
 
         // 5 - get data return login
         return {
-            data: getInforData({ fields: ['_id', 'name', 'email'], object: foundShop }),
+            data: getInforData({ fields: ['_id', 'name', 'email', 'roles'], object: foundShop }),
             tokens
         }
     }
