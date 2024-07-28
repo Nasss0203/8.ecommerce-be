@@ -1,18 +1,16 @@
-const express = require('express')
-const { apiKey, permission } = require('../auth/checkAuth')
-const router = express.Router()
-
+const express = require("express");
+const { apiKey, permission } = require("../auth/checkAuth");
+const router = express.Router();
 
 // check apiKey
-router.use(apiKey)
+router.use(apiKey);
 
 // check permission
-router.use(permission('0000'))
+router.use(permission("0000"));
 
+router.use("/v1/api/upload", require("./upload/index"));
+router.use("/v1/api/product", require("./product/index"));
+router.use("/v1/api/discount", require("./discount/index"));
+router.use("/v1/api/", require("./auth/index"));
 
-
-router.use('/v1/api/upload', require('./upload/index'))
-router.use('/v1/api/product', require('./product/index'))
-router.use('/v1/api/', require('./auth/index'))
-
-module.exports = router
+module.exports = router;

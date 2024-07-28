@@ -1,6 +1,6 @@
 const { Types } = require("mongoose");
 const { product } = require("../product.model");
-const { getSelectData, unSetSelectData } = require("../../utils");
+const { getSelectData, unGetSelectData } = require("../../utils");
 
 const findAllDraftsForShop = async ({ query, limit, skip }) => {
 	return await queryProduct({ query, limit, skip });
@@ -68,7 +68,7 @@ const findAllProducts = async ({ limit, sort, page, filter, select }) => {
 };
 
 const findProductById = async ({ product_id, unSelect }) => {
-	return await product.findById(product_id).select(unSetSelectData(unSelect));
+	return await product.findById(product_id).select(unGetSelectData(unSelect));
 };
 
 const updateProductById = async ({
