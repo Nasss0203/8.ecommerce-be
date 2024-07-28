@@ -9,8 +9,10 @@ const {
 	findAllProducts,
 	findProductById,
 	updateProductById,
+	findAllProductsByCategory,
 } = require("../models/repo/product.repo");
 const { removeUndefine, updateNestedObjectParser } = require("../utils");
+const { insertInventory } = require("../models/repo/inventory.repo");
 
 class ProductFactory {
 	static productRegistry = {}; // key-class
@@ -110,8 +112,16 @@ class ProductService {
 		this.product_attributes = product_attributes;
 	}
 
-	async createProduct() {
-		return await product.create(this);
+	async createProduct(product_id) {
+		const newProduct = await product.create({ ...this, _id: product_id });
+		if (newProduct) {
+			await insertInventory({
+				productId: newProduct._id,
+				authId: this.product_auth,
+				stock: this.product_quantity,
+			});
+		}
+		return newProduct;
 	}
 
 	// update Product
