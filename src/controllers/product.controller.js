@@ -85,9 +85,20 @@ class ProductController {
 				req.params.productId,
 				{
 					...req.body,
-					product_shop: req.user.userId,
+					product_auth: req.user.userId,
 				},
 			),
+		}).send(res);
+	};
+
+	//delete product
+
+	deleteProductById = async (req, res, next) => {
+		new SuccessResponse({
+			message: "Delete product success",
+			metadata: await ProductService.deleteProductById({
+				product_id: req.params.product_id,
+			}),
 		}).send(res);
 	};
 }

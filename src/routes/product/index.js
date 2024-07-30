@@ -32,4 +32,9 @@ router.get(
 	asyncHandler(productController.findAllPublishForShop),
 );
 
+router.delete(
+	"/delete/:product_id",
+	asyncHandler(productController.deleteProductById),
+);
+
 module.exports = router;

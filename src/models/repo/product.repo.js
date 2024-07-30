@@ -1,6 +1,7 @@
 const { Types } = require("mongoose");
 const { product } = require("../product.model");
 const { getSelectData, unGetSelectData } = require("../../utils");
+const createError = require("http-errors");
 
 const findAllDraftsForShop = async ({ query, limit, skip }) => {
 	return await queryProduct({ query, limit, skip });
@@ -82,6 +83,11 @@ const updateProductById = async ({
 	});
 };
 
+const deleteProductById = async ({ product_id }) => {
+	if (!product_id) throw new createError(404, `Can't find product id repo`);
+	return await product.findByIdAndDelete(product_id).lean();
+};
+
 const queryProduct = async ({ query, limit, skip }) => {
 	return await product
 		.find(query)
@@ -102,4 +108,5 @@ module.exports = {
 	findAllProducts,
 	findProductById,
 	updateProductById,
+	deleteProductById,
 };

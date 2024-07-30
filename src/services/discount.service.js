@@ -286,3 +286,5 @@ class DiscountService {
 		return result;
 	}
 }
+
+module.exports = DiscountService;

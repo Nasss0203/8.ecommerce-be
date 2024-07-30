@@ -10,6 +10,7 @@ const {
 	findProductById,
 	updateProductById,
 	findAllProductsByCategory,
+	deleteProductById,
 } = require("../models/repo/product.repo");
 const { removeUndefine, updateNestedObjectParser } = require("../utils");
 const { insertInventory } = require("../models/repo/inventory.repo");
@@ -86,6 +87,10 @@ class ProductFactory {
 
 	static async findProductById({ product_id }) {
 		return await findProductById({ product_id, unSelect: ["__v"] });
+	}
+
+	static async deleteProductById({ product_id }) {
+		return await deleteProductById({ product_id });
 	}
 }
 
