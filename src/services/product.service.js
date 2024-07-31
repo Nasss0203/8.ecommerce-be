@@ -81,6 +81,7 @@ class ProductFactory {
 				"product_category",
 				"product_quantity",
 				"product_slug",
+				"product_auth",
 			],
 		});
 	}
