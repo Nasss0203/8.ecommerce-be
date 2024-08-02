@@ -82,6 +82,37 @@ const updateNestedObjectParser = (obj) => {
 	return final;
 };
 
+const locks = {}; // Đối tượng lưu trữ các khóa
+// Hàm lấy khóa
+const acquireLock = (productId) => {
+	return new Promise((resolve, reject) => {
+		const key = `lock_v203_${productId}`;
+		const retryTimes = 10;
+		const expireTime = 3000; // Không sử dụng trong bộ nhớ chia sẻ đơn giản
+
+		const tryAcquire = (attempt) => {
+			if (attempt >= retryTimes) {
+				return resolve(false); // Không thể lấy khóa sau nhiều lần thử
+			}
+
+			if (!locks[key]) {
+				locks[key] = true; // Đặt khóa
+				return resolve(true);
+			}
+
+			setTimeout(() => tryAcquire(attempt + 1), 50); // Thử lại sau 50ms
+		};
+
+		tryAcquire(0);
+	});
+};
+
+// Hàm giải phóng khóa
+const releaseLock = (productId) => {
+	const key = `lock_v203_${productId}`;
+	delete locks[key]; // Xóa khóa
+};
+
 module.exports = {
 	getInforData,
 	getSelectData,
@@ -89,4 +120,6 @@ module.exports = {
 	removeUndefine,
 	updateNestedObjectParser,
 	convertToObjectIdMongodb,
+	acquireLock,
+	releaseLock,
 };

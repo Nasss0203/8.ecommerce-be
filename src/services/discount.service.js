@@ -1,5 +1,4 @@
 const createError = require("http-errors");
-const discountModel = require("../models/discount.model");
 const { convertToObjectIdMongodb } = require("../utils");
 const {
 	updateDiscountCodeById,
@@ -7,6 +6,7 @@ const {
 	checkDiscountExists,
 } = require("../models/repo/discount.repo");
 const { findAllProducts } = require("../models/repo/product.repo");
+const discountModel = require("../models/discount.model");
 /**
  * Discount Services
  * 1 - Generate Discount Code [Shop | Admin]
@@ -17,30 +17,26 @@ const { findAllProducts } = require("../models/repo/product.repo");
  * 6 - Cancel discount code [User]
  */
 class DiscountService {
-	static async createDiscountCode(
-		code,
-		start_date,
-		end_date,
-		is_active,
-		authId,
-		min_order_value,
-		product_ids,
-		applies_to,
-		name,
-		description,
-		type,
-		value,
-		max_value,
-		max_uses,
-		uses_count,
-		max_uses_per_user,
-	) {
-		if (
-			new Date() < new Date(start_date) ||
-			new Date() > new Date(end_date)
-		) {
-			throw new createError(400, "Discount code has expried");
-		}
+	static async createDiscountCode(payload) {
+		const {
+			code,
+			start_date,
+			end_date,
+			is_active,
+			authId,
+			min_order_value,
+			product_ids,
+			applies_to,
+			name,
+			description,
+			type,
+			value,
+			max_value,
+			max_uses,
+			uses_count,
+			max_uses_per_user,
+			users_used,
+		} = payload;
 
 		if (new Date(start_date) >= new Date(end_date)) {
 			throw new createError(400, "Start date must be before end date ");
@@ -74,7 +70,7 @@ class DiscountService {
 			discount_authId: authId,
 			discount_max_uses_per_user: max_uses_per_user,
 			discount_is_active: is_active,
-			discount_applies_to: applies_to,
+			discount_apply_to: applies_to,
 			discount_product_ids: applies_to === "all" ? [] : product_ids,
 		});
 
@@ -99,7 +95,7 @@ class DiscountService {
 		const foundDiscount = await discountModel
 			.findOne({
 				discount_code: code,
-				discount_shopId: convertToObjectIdMongodb(authId),
+				discount_authId: convertToObjectIdMongodb(authId),
 			})
 			.lean();
 
@@ -147,7 +143,7 @@ class DiscountService {
 			limit: +limit,
 			page: +page,
 			filter: {
-				discount_shopId: convertToObjectIdMongodb(authId),
+				discount_authId: convertToObjectIdMongodb(authId),
 				discount_is_active: true,
 			},
 			unSelect: ["__v", "discount_authId"],
@@ -207,6 +203,11 @@ class DiscountService {
 		let totalOrder = 0;
 		if (discount_min_order_value > 0) {
 			totalOrder = products.reduce((acc, product) => {
+				console.log("foundDiscount~", foundDiscount);
+				console.log("foundDiscount~", foundDiscount);
+				console.log("foundDiscount~", foundDiscount);
+				console.log("foundDiscount~", foundDiscount);
+				console.log("foundDiscount~", foundDiscount);
 				return acc + product.quantity * product.price;
 			}, 0);
 			if (totalOrder < discount_min_order_value) {

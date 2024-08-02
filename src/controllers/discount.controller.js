@@ -7,7 +7,7 @@ class DiscountController {
 			message: "Successful code discount",
 			metadata: await DiscountService.createDiscountCode({
 				...req.body,
-				shopId: req.user.userId,
+				authId: req.user.userId,
 			}),
 		}).send(res);
 	};
@@ -17,7 +17,7 @@ class DiscountController {
 			message: "Successful code Found",
 			metadata: await DiscountService.getAllDiscountCodesByShop({
 				...req.query,
-				shopId: req.user.userId,
+				authId: req.user.userId,
 			}),
 		}).send(res);
 	};

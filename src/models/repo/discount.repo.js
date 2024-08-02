@@ -1,3 +1,4 @@
+const { unGetSelectData } = require("../../utils");
 const discountModel = require("../discount.model");
 
 const updateDiscountCodeById = async ({ discountId, payload }) => {
@@ -47,7 +48,7 @@ const findAllDiscountCodeSelect = async ({
 };
 
 const checkDiscountExists = async ({ model, filter }) => {
-	return await discountModel.findOne(filter).lean();
+	return await model.findOne(filter).lean();
 };
 
 module.exports = {
