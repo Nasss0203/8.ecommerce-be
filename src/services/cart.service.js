@@ -39,13 +39,23 @@ class CartService {
 		if (!userCart) {
 			return await CartService.createUserCart({ userId, product });
 		}
-		if (!userCart.cart_products.length) {
-			userCart.cart_products = [product];
+
+		// Kiểm tra xem sản phẩm đã tồn tại trong giỏ hàng chưa
+		const productIndex = userCart.cart_products.findIndex(
+			(p) => p.productId === product.productId,
+		);
+
+		if (productIndex !== -1) {
+			// Nếu sản phẩm tồn tại, cập nhật số lượng
+			return await CartService.updateUserCartQuantity({
+				userId,
+				product,
+			});
+		} else {
+			// Nếu sản phẩm không tồn tại, thêm nó vào giỏ hàng
+			userCart.cart_products.push(product);
 			return await userCart.save();
 		}
-
-		//Gio hang ton tai, va co san pham thi update quantity
-		return await CartService.updateUserCartQuantity({ userId, product });
 	}
 
 	static async addToCartV2({ userId, shop_order_ids }) {

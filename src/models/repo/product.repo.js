@@ -6,6 +6,7 @@ const {
 	convertToObjectIdMongodb,
 } = require("../../utils");
 const createError = require("http-errors");
+const { cart } = require("../cart.model");
 
 const findAllDraftsForShop = async ({ query, limit, skip }) => {
 	return await queryProduct({ query, limit, skip });

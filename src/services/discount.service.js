@@ -49,6 +49,7 @@ class DiscountService {
 				discount_authId: convertToObjectIdMongodb(authId),
 			})
 			.lean();
+		console.log("foundDiscount~", foundDiscount);
 
 		if (foundDiscount && foundDiscount.discount_is_active) {
 			throw new createError(400, "Discount exists!");
@@ -181,6 +182,7 @@ class DiscountService {
 				discount_authId: convertToObjectIdMongodb(authId),
 			},
 		});
+		console.log("foundDiscount~", foundDiscount);
 
 		if (!foundDiscount)
 			throw new createError(404, `Discount doesn't exists`);
@@ -203,11 +205,6 @@ class DiscountService {
 		let totalOrder = 0;
 		if (discount_min_order_value > 0) {
 			totalOrder = products.reduce((acc, product) => {
-				console.log("foundDiscount~", foundDiscount);
-				console.log("foundDiscount~", foundDiscount);
-				console.log("foundDiscount~", foundDiscount);
-				console.log("foundDiscount~", foundDiscount);
-				console.log("foundDiscount~", foundDiscount);
 				return acc + product.quantity * product.price;
 			}, 0);
 			if (totalOrder < discount_min_order_value) {

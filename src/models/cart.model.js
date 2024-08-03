@@ -1,7 +1,7 @@
 const { Schema, default: mongoose } = require("mongoose");
 
 const DOCUMENT_NAME = "Cart";
-const COLLECTION_NAME = "carts";
+const COLLECTION_NAME = "Carts";
 
 // Declare the Schema of the Mongo model
 const cartSchema = new Schema(

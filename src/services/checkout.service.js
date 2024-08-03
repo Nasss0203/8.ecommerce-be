@@ -1,6 +1,8 @@
 const { findCartById } = require("../models/repo/cart.repo");
 const { checkProductByServer } = require("../models/repo/product.repo");
 const createError = require("http-errors");
+const { getDiscountAmount } = require("./discount.service");
+
 class CheckoutService {
 	static async checkoutReview({ cartId, userId, shop_order_ids }) {
 		const foundCart = await findCartById(cartId);
@@ -15,21 +17,37 @@ class CheckoutService {
 			shop_order_ids_new = [];
 
 		// tinh nang tinh tong bill
-		for (let i = 0; i < shop_order_ids_new.length; i++) {
+		for (let i = 0; i < shop_order_ids.length; i++) {
 			const {
-				shopId,
+				authId,
 				shop_discounts = [],
-				item_products = {},
+				item_products = [],
 			} = shop_order_ids[i];
+
+			// const checkProductServer = item_products
+			// 	.map((item) => {
+			// 		const foundProduct = foundCart.cart_products.find(
+			// 			(p) => p.productId === item.productId,
+			// 		);
+			// 		if (foundProduct) {
+			// 			return {
+			// 				price: foundProduct.price,
+			// 				quantity: item.quantity,
+			// 				productId: foundProduct.productId,
+			// 			};
+			// 		}
+			// 	})
+			// 	.filter((product) => product);
 
 			const checkProductServer = await checkProductByServer(
 				item_products,
 			);
+			console.log("checkProductServer~", checkProductServer);
 
 			if (!checkProductServer)
 				throw new createError(400, "Order wrong!!!");
 
-			//tong tien don hang
+			//Tong tien don hang
 			const checkoutPrice = checkProductServer.reduce((acc, product) => {
 				return acc + product.quantity * product.price;
 			}, 0);
@@ -37,7 +55,7 @@ class CheckoutService {
 			checkout_order.totalPrice += checkoutPrice;
 
 			const itemCheckout = {
-				shopId,
+				authId,
 				shop_discounts,
 				priceRaw: checkoutPrice, // tien truoc khi giam giam
 				priceApplyCheckout: checkoutPrice,
@@ -52,7 +70,7 @@ class CheckoutService {
 					await getDiscountAmount({
 						codeId: shop_discounts[0].codeId,
 						userId,
-						shopId,
+						authId,
 						products: checkProductServer,
 					});
 
@@ -96,7 +114,6 @@ class CheckoutService {
 		const products = shop_order_ids_new.flatMap(
 			(order) => order.item_products,
 		);
-		console.log("[products]: ", products);
 		const acquireProduct = [];
 		for (let i = 0; i < products.length; i++) {
 			const { productId, quantity } = products[i];
