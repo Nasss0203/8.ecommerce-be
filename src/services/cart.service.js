@@ -63,6 +63,7 @@ class CartService {
 			shop_order_ids[0].item_products[0];
 
 		const foundProduct = await getProductById(productId);
+		console.log("foundProduct~", foundProduct);
 		if (!foundProduct) throw new createError(404, "Not foundProduct");
 		//Compare
 		if (

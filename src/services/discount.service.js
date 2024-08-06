@@ -49,7 +49,6 @@ class DiscountService {
 				discount_authId: convertToObjectIdMongodb(authId),
 			})
 			.lean();
-		console.log("foundDiscount~", foundDiscount);
 
 		if (foundDiscount && foundDiscount.discount_is_active) {
 			throw new createError(400, "Discount exists!");
@@ -182,7 +181,6 @@ class DiscountService {
 				discount_authId: convertToObjectIdMongodb(authId),
 			},
 		});
-		console.log("foundDiscount~", foundDiscount);
 
 		if (!foundDiscount)
 			throw new createError(404, `Discount doesn't exists`);
@@ -223,16 +221,12 @@ class DiscountService {
 			}
 		}
 
-		console.log("discount_value: ", discount_value);
-
 		//Check discount nay la fixed_amount hay
 		const amount =
 			discount_type === "fixed_amount"
 				? discount_value
 				: totalOrder * (discount_value / 100);
-		console.log("totalOrder: ", totalOrder);
-		console.log("discount_value: ", discount_value);
-		console.log("amount: ", amount);
+
 		return {
 			totalOrder,
 			discount: amount,

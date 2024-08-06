@@ -104,25 +104,66 @@ const queryProduct = async ({ query, limit, skip }) => {
 		.exec();
 };
 
+const getArrayProduct = async (productId) => {
+	return await product
+		.find({ _id: { $in: productId.map(convertToObjectIdMongodb) } })
+		.lean();
+};
+
 const getProductById = async (productId) => {
 	return await product
 		.findOne({ _id: convertToObjectIdMongodb(productId) })
 		.lean();
 };
 
-const checkProductByServer = async (products) => {
-	return await Promise.all(
-		products.map(async (product) => {
-			const foundProduct = await getProductById(product.productId);
-			if (foundProduct) {
-				return {
-					price: foundProduct.product_price,
-					quantity: foundProduct.product_quantity,
-					productId: foundProduct._id,
-				};
-			}
-		}),
+const checkProductByServer = async (products, cart) => {
+	// Lấy tất cả các productId từ products
+	const productIds = products.map((product) => product.productId);
+
+	// Tìm tất cả các sản phẩm trong database dựa trên mảng productIds
+	const foundProducts = await getArrayProduct(productIds);
+
+	// Tạo một Map để lưu trữ thông tin sản phẩm từ database
+	const productMap = new Map(
+		foundProducts.map((product) => [product._id.toString(), product]),
 	);
+
+	return products
+		.map((product) => {
+			// Tìm các sản phẩm trong giỏ hàng có cùng productId
+			const foundCartItems = cart.cart_products.filter(
+				(item) =>
+					item.productId.toString() === product.productId.toString(),
+			);
+
+			if (foundCartItems.length > 0) {
+				// Lấy thông tin sản phẩm từ Map
+				const foundProduct = productMap.get(
+					product.productId.toString(),
+				);
+
+				if (foundProduct) {
+					// Tính tổng số lượng và giá trị từ các sản phẩm trong giỏ hàng
+					const totalQuantity = foundCartItems.reduce(
+						(sum, item) => sum + item.quantity,
+						0,
+					);
+					const totalPrice = foundCartItems.reduce(
+						(sum, item) => sum + item.quantity * item.price,
+						0,
+					);
+
+					return {
+						price: totalPrice / totalQuantity, // Giá trung bình (nếu cần)
+						quantity: totalQuantity,
+						productId: foundCartItems[0].productId,
+						product_price: foundProduct.product_price,
+						product_quantity: foundProduct.product_quantity,
+					};
+				}
+			}
+		})
+		.filter((item) => item !== undefined); // Loại bỏ các mục undefined
 };
 
 module.exports = {

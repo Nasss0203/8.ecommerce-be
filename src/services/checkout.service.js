@@ -2,6 +2,8 @@ const { findCartById } = require("../models/repo/cart.repo");
 const { checkProductByServer } = require("../models/repo/product.repo");
 const createError = require("http-errors");
 const { getDiscountAmount } = require("./discount.service");
+const { checkout } = require("../models/checkout.model");
+const { findCheckoutByCart } = require("../models/repo/checkout.repo");
 
 class CheckoutService {
 	static async checkoutReview({ cartId, userId, shop_order_ids }) {
@@ -24,25 +26,10 @@ class CheckoutService {
 				item_products = [],
 			} = shop_order_ids[i];
 
-			// const checkProductServer = item_products
-			// 	.map((item) => {
-			// 		const foundProduct = foundCart.cart_products.find(
-			// 			(p) => p.productId === item.productId,
-			// 		);
-			// 		if (foundProduct) {
-			// 			return {
-			// 				price: foundProduct.price,
-			// 				quantity: item.quantity,
-			// 				productId: foundProduct.productId,
-			// 			};
-			// 		}
-			// 	})
-			// 	.filter((product) => product);
-
 			const checkProductServer = await checkProductByServer(
 				item_products,
+				foundCart,
 			);
-			console.log("checkProductServer~", checkProductServer);
 
 			if (!checkProductServer)
 				throw new createError(400, "Order wrong!!!");
@@ -76,6 +63,7 @@ class CheckoutService {
 
 				//tong cong disscount giam gia
 				checkout_order.totalDiscount += discount;
+				// console.log("checkout_order~", checkout_order);
 
 				// neu tong tien giam gia lon hon 0
 				if (discount > 0) {
@@ -87,84 +75,48 @@ class CheckoutService {
 			checkout_order.totalCheckout += itemCheckout.priceApplyCheckout;
 			shop_order_ids_new.push(itemCheckout);
 		}
-		return {
-			shop_order_ids,
-			shop_order_ids_new,
-			checkout_order,
+
+		const checkoutData = {
+			checkout_auth: userId,
+			checkout_items: shop_order_ids_new.flatMap((item) => {
+				// Sử dụng flatMap để làm phẳng mảng kết quả
+				return item.item_products.map((product) => ({
+					// Lặp qua từng sản phẩm trong item_products
+					productId: product.productId,
+					// checkout_productName: product.productName,
+					quantity: product.quantity,
+					price: product.price,
+					discount:
+						item.shop_discounts.length > 0
+							? item.shop_discounts[0].discount
+							: 0, // Giả sử chỉ có 1 discount cho toàn bộ item
+					totalPrice: item.priceApplyCheckout,
+				}));
+			}),
+			checkout_totalPrice: checkout_order.totalPrice,
+			checkout_shippingFee: checkout_order.feeShip,
+			checkout_discount: checkout_order.totalDiscount,
+			// checkout_grandTotal: checkout_order.totalCheckout,
+			checkout_paymentStatus: "pending",
 		};
-	}
 
-	//order
-	static async orderByUser({
-		shop_order_ids,
-		cartId,
-		userId,
-		user_address = {},
-		user_payment = {},
-	}) {
-		const { shop_order_ids_new, checkout_order } =
-			await CheckoutService.checkoutReview({
-				cartId,
-				userId,
-				shop_order_ids,
-			});
-
-		//check lai lan nua xem vuot ton kho hay khong
-		//get new array products
-		const products = shop_order_ids_new.flatMap(
-			(order) => order.item_products,
+		let foundCheckout = await findCheckoutByCart(
+			checkoutData.checkout_auth,
 		);
-		const acquireProduct = [];
-		for (let i = 0; i < products.length; i++) {
-			const { productId, quantity } = products[i];
-			const keyLock = await acquireLock(productId, quantity, cartId);
-			acquireProduct.push(keyLock ? true : false);
-			if (key) {
-				await releaseLock(key);
-			}
-		}
+		let updatedOrCreateCheckout; // Sử dụng một biến mới để lưu kết quả
 
-		//chekc neu co mot san pham het hang trong kho
-		if (acquireProduct.includes(false)) {
-			throw new createError(
-				400,
-				"Mot so san pham da duoc cap nhat, vui lon quay lai gio hang",
+		if (foundCheckout) {
+			updatedOrCreateCheckout = await checkout.findOneAndUpdate(
+				{ checkout_auth: userId },
+				checkoutData,
+				{ new: true },
 			);
+		} else {
+			updatedOrCreateCheckout = await checkout.create(checkoutData);
 		}
 
-		const newOrder = await order.create({
-			order_userId: userId,
-			order_checkout: checkout_order,
-			order_shipping: user_address,
-			order_payment: user_payment,
-			order_products: shop_order_ids_new,
-		});
-
-		//Trường hợp: nếu insert thanh coongm thì remove product có trong cart
-		if (newOrder) {
-		}
-		return newOrder;
+		return updatedOrCreateCheckout;
 	}
-
-	/*
-        1. Query order [Users]
-    */
-	static async getOneOrderByUser() {}
-
-	/*
-        2. Query order Using id [Users]
-    */
-	static async getOrderByUser() {}
-
-	/*
-        3. Cancel order user [Users]
-    */
-	static async cancelOrderByUser() {}
-
-	/*
-        4. Update Order Status  [Shop | Admin]
-    */
-	static async updateOrderStatusByShop() {}
 }
 
 module.exports = CheckoutService;
