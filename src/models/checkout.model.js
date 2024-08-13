@@ -6,10 +6,16 @@ const COLLECTION_NAME = "Checkouts";
 const checkoutSchema = new mongoose.Schema(
 	{
 		// ID người dùng (liên kết với collection Auth)
+		checkout_cart: {
+			// type: mongoose.Schema.Types.ObjectId,
+			// ref: "Auth",
+			type: String,
+			required: true,
+		},
 		checkout_auth: {
 			// type: mongoose.Schema.Types.ObjectId,
 			// ref: "Auth",
-			type: Number,
+			type: String,
 			required: true,
 		},
 
@@ -26,7 +32,7 @@ const checkoutSchema = new mongoose.Schema(
 				quantity: { type: Number, required: true, min: 1 }, // Số lượng
 				price: { type: Number, required: true, min: 0 }, // Giá gốc của sản phẩm
 				discount: { type: Number, default: 0 }, // Số tiền giảm giá (nếu có)
-				totalPrice: { type: Number, required: true, min: 0 }, // Tổng giá của sản phẩm sau khi đã áp dụng giảm giá
+				totalPrice: { type: Number, required: false, min: 0 }, // Tổng giá của sản phẩm sau khi đã áp dụng giảm giá
 			},
 		],
 
@@ -43,7 +49,7 @@ const checkoutSchema = new mongoose.Schema(
 		checkout_tax: { type: Number, default: 0 },
 
 		// Tổng giá trị đơn hàng (bao gồm phí vận chuyển, giảm giá và thuế)
-		// checkout_grandTotal: { type: Number, required: true, min: 0 },
+		checkout_grandTotal: { type: Number, required: true, min: 0 },
 
 		// Phương thức vận chuyển
 		// checkout_shippingMethod: { type: String, required: true },

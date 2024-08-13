@@ -8,18 +8,19 @@ const orderSchema = new Schema(
 		order_userId: {
 			// type: mongoose.Schema.Types.ObjectId,
 			// ref: "Auth", // Liên kết với collection Auth
-			type: Number,
+			type: String,
 			// required: true,
 		},
 		order_checkout: {
 			totalPrice: { type: Number, required: false },
 			totalApplyDiscount: { type: Number, default: 0 },
+			grandTotal: { type: Number, default: 0 },
 			feeShip: { type: Number, default: 0 },
 		},
 		order_shipping: {
-			street: { type: String, required: true },
-			city: { type: String, required: true },
-			country: { type: String, required: true },
+			street: { type: String, required: false },
+			city: { type: String, required: false },
+			country: { type: String, required: false },
 		},
 		order_payment: {
 			method: { type: String, required: false },
@@ -37,11 +38,13 @@ const orderSchema = new Schema(
 					ref: "Product",
 					required: true,
 				},
-				productName: { type: String, required: false },
+				name: { type: String, required: false },
+				image: { type: String, required: false },
 				quantity: { type: Number, required: false, min: 1 },
 				price: { type: Number, required: false, min: 0 },
 				discount: { type: Number, default: 0 },
 				totalPrice: { type: Number, required: false, min: 0 },
+				_id: false,
 			},
 		],
 		order_tracking: { type: String, default: "#0000131052024" },
@@ -50,9 +53,13 @@ const orderSchema = new Schema(
 			enum: ["pending", "confirmed", "shipped", "cancelled", "delivered"],
 			default: "pending",
 		},
+		order_cancel: { type: String, default: "" },
 	},
 	{
-		timestamps: true,
+		timestamps: {
+			createdAt: "createdOn",
+			updatedAt: "modifiedOn",
+		},
 		collection: COLLECTION_NAME,
 	},
 );

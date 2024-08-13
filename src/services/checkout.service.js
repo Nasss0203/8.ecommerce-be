@@ -3,7 +3,10 @@ const { checkProductByServer } = require("../models/repo/product.repo");
 const createError = require("http-errors");
 const { getDiscountAmount } = require("./discount.service");
 const { checkout } = require("../models/checkout.model");
-const { findCheckoutByCart } = require("../models/repo/checkout.repo");
+const {
+	findCheckoutByCart,
+	findCheckoutById,
+} = require("../models/repo/checkout.repo");
 
 class CheckoutService {
 	static async checkoutReview({ cartId, userId, shop_order_ids }) {
@@ -77,26 +80,28 @@ class CheckoutService {
 		}
 
 		const checkoutData = {
+			checkout_cart: cartId,
 			checkout_auth: userId,
 			checkout_items: shop_order_ids_new.flatMap((item) => {
 				// Sử dụng flatMap để làm phẳng mảng kết quả
 				return item.item_products.map((product) => ({
 					// Lặp qua từng sản phẩm trong item_products
 					productId: product.productId,
-					// checkout_productName: product.productName,
 					quantity: product.quantity,
 					price: product.price,
 					discount:
-						item.shop_discounts.length > 0
-							? item.shop_discounts[0].discount
-							: 0, // Giả sử chỉ có 1 discount cho toàn bộ item
-					totalPrice: item.priceApplyCheckout,
+						(item.priceRaw - item.priceApplyCheckout) /
+						item.item_products.length, // Tính discount cho từng sản phẩm
+					totalPrice:
+						product.price * product.quantity -
+						(item.priceRaw - item.priceApplyCheckout) /
+							item.item_products.length,
 				}));
 			}),
 			checkout_totalPrice: checkout_order.totalPrice,
 			checkout_shippingFee: checkout_order.feeShip,
 			checkout_discount: checkout_order.totalDiscount,
-			// checkout_grandTotal: checkout_order.totalCheckout,
+			checkout_grandTotal: checkout_order.totalCheckout,
 			checkout_paymentStatus: "pending",
 		};
 
@@ -116,6 +121,12 @@ class CheckoutService {
 		}
 
 		return updatedOrCreateCheckout;
+	}
+
+	static async findCheckoutById({ checkoutId }) {
+		const foundCheckout = await findCheckoutById(checkoutId);
+		if (!foundCheckout) throw new createError(404, "Checkout not found");
+		return foundCheckout;
 	}
 }
 

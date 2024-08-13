@@ -4,6 +4,13 @@ const { authentication } = require("../../auth/authUtils");
 const orderController = require("../../controllers/order.controller");
 const router = express.Router();
 
+// router.use(authentication);
 router.post("", asyncHandler(orderController.createOrder));
+router.get("", asyncHandler(orderController.getOneOrderByUser));
+router.get("/:orderId", asyncHandler(orderController.getOrderByUser));
+router.post(
+	"/cancel/:orderId",
+	asyncHandler(orderController.cancelOrderByUser),
+);
 
 module.exports = router;
