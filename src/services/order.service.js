@@ -5,6 +5,7 @@ const { acquireLock, releaseLock } = require("../utils");
 const {
 	getOneOrderByUser,
 	getOrderByUser,
+	getAllOrderByAdmin,
 } = require("../models/repo/order.repo");
 const { default: mongoose } = require("mongoose");
 const { cart } = require("../models/cart.model");
@@ -98,6 +99,13 @@ class OrderService {
         4. Update Order Status  [Shop | Admin]
     */
 	static async updateOrderStatusByShop() {}
+
+	/*
+		5. Query All Order [Admin]
+	*/
+	static async getAllOrderByAdmin({ limit = 10, sort = "ctime", page = 1 }) {
+		return await getAllOrderByAdmin({ limit, sort, page });
+	}
 }
 
 module.exports = OrderService;

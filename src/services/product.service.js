@@ -64,7 +64,7 @@ class ProductFactory {
 	}
 
 	static async findAllProducts({
-		limit = 50,
+		limit = 10,
 		sort = "ctime",
 		page = 1,
 		filter = { isPublished: true },

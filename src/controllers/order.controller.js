@@ -37,6 +37,13 @@ class OrderController {
 			}),
 		}).send(res);
 	};
+
+	getAllOrderByAdmin = async (req, res, next) => {
+		new SuccessResponse({
+			message: "Get All Order By Admin",
+			metadata: await OrderService.getAllOrderByAdmin(req.query),
+		}).send(res);
+	};
 }
 
 module.exports = new OrderController();
