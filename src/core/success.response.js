@@ -1,14 +1,12 @@
-
 const StatusCode = {
-    OK: 200,
-    CREATED: 201
-}
+	OK: 200,
+	CREATED: 201,
+};
 
 const ReasonStatusCode = {
-    OK: 'Success',
-    CREATED: 'Created!'
-}
-
+	OK: "Success",
+	CREATED: "Created!",
+};
 
 /**
     Constructor:
@@ -22,30 +20,42 @@ const ReasonStatusCode = {
         - Phương thức này thiết lập status code của response thành this.status (mã lỗi của phản hồi), sau đó gửi phản hồi dưới dạng JSON với các thuộc tính của đối tượng SuccessResponse, bao gồm message, status, và metadata.
  */
 class SuccessResponse {
-    constructor({ message, statusCode = StatusCode.OK, reasonStatusCode = ReasonStatusCode.OK, metadata = {} }) {
-        this.message = !message ? reasonStatusCode : message; // Thiết lập thông điệp thành công, mặc định là "Success" nếu không có message
-        this.status = statusCode; // Thiết lập mã lỗi, mặc định là 200 (OK)
-        this.metadata = metadata; // Thiết lập dữ liệu bổ sung, mặc định là một đối tượng rỗng {}
-    }
-    send(res, headers = {}) {
-        return res.status(this.status).json(this); // Gửi phản hồi thành công dưới dạng JSON với mã lỗi và dữ liệu bổ sung
-    }
+	constructor({
+		message,
+		statusCode = StatusCode.OK,
+		reasonStatusCode = ReasonStatusCode.OK,
+		metadata = {},
+	}) {
+		this.message = !message ? reasonStatusCode : message; // Thiết lập thông điệp thành công, mặc định là "Success" nếu không có message
+		this.status = statusCode; // Thiết lập mã lỗi, mặc định là 200 (OK)
+		this.metadata = metadata; // Thiết lập dữ liệu bổ sung, mặc định là một đối tượng rỗng {}
+	}
+	send(res, headers = {}) {
+		return res.status(this.status).json(this); // Gửi phản hồi thành công dưới dạng JSON với mã lỗi và dữ liệu bổ sung
+	}
 }
 
-
 class OK extends SuccessResponse {
-    constructor({ message, metadata }) {
-        super({ message, metadata })
-    }
+	constructor({ message, metadata }) {
+		super({ message, metadata });
+	}
 }
 
 class CREATED extends SuccessResponse {
-    constructor({ options = {}, message, statusCode = StatusCode.CREATED, reasonStatusCode = ReasonStatusCode.CREATED, metadata }) {
-        super({ message, metadata })
-        this.optiosn = options
-    }
+	constructor({
+		options = {},
+		message,
+		statusCode = StatusCode.CREATED,
+		reasonStatusCode = ReasonStatusCode.CREATED,
+		metadata,
+	}) {
+		super({ message, metadata });
+		this.optiosn = options;
+	}
 }
 
 module.exports = {
-    OK, CREATED, SuccessResponse
-}
+	OK,
+	CREATED,
+	SuccessResponse,
+};
