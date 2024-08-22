@@ -18,9 +18,7 @@ const grantAccess = (action, resource) => {
 				}),
 			);
 			const role_name = req.query.role;
-			console.log("role_name~", role_name);
 			const permission = rbac.can(role_name)[action](resource);
-			console.log("permission~", permission.granted);
 
 			if (!permission.granted) {
 				throw new createError(

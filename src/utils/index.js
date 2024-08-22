@@ -113,6 +113,15 @@ const releaseLock = (productId) => {
 	delete locks[key]; // Xóa khóa
 };
 
+//replace
+const replacePlaceholder = (template, params) => {
+	Object.keys(params).forEach((k) => {
+		const placeholder = `{{${k}}}`; //verify token
+		template = template.replace(new RegExp(placeholder, "g"), params[k]);
+	});
+	return template;
+};
+
 module.exports = {
 	getInforData,
 	getSelectData,
@@ -122,4 +131,5 @@ module.exports = {
 	convertToObjectIdMongodb,
 	acquireLock,
 	releaseLock,
+	replacePlaceholder,
 };
