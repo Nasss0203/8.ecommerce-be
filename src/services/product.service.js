@@ -64,7 +64,7 @@ class ProductFactory {
 	}
 
 	static async findAllProducts({
-		limit = 10,
+		limit = 50,
 		sort = "ctime",
 		page = 1,
 		filter = { isPublished: true },
@@ -82,6 +82,7 @@ class ProductFactory {
 				"product_quantity",
 				"product_slug",
 				"product_auth",
+				"product_attributes",
 			],
 		});
 	}
@@ -208,7 +209,7 @@ class Laptops extends ProductService {
 	}
 }
 
-ProductFactory.registerProductType("Phones", Phones);
-ProductFactory.registerProductType("Laptops", Laptops);
+ProductFactory.registerProductType("phone", Phones);
+ProductFactory.registerProductType("laptop", Laptops);
 
 module.exports = ProductFactory;

@@ -19,7 +19,7 @@ let productSchema = new mongoose.Schema(
 		product_category: {
 			type: String,
 			required: true,
-			enum: ["Phones", "Laptops", "Tablets"],
+			enum: ["phone", "laptop", "tablet"],
 		},
 		product_attributes: { type: Schema.Types.Mixed, required: true },
 		product_auth: { type: Schema.Types.ObjectId, ref: "Auth" },

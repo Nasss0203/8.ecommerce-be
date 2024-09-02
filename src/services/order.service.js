@@ -6,6 +6,7 @@ const {
 	getOneOrderByUser,
 	getOrderByUser,
 	getAllOrderByAdmin,
+	updateOrderByAdmin,
 } = require("../models/repo/order.repo");
 const { default: mongoose } = require("mongoose");
 const { cart } = require("../models/cart.model");
@@ -63,10 +64,13 @@ class OrderService {
         2. Query order Using id [Users]
     */
 	static async getOrderByUser({ orderId, userId }) {
+		console.log("orderId~", orderId);
+		console.log("userId~", userId);
 		const order = await getOrderByUser({
 			orderId,
 			userId,
 		});
+
 		if (!order) throw new createError(404, "Order not found");
 		return order;
 	}
@@ -98,7 +102,9 @@ class OrderService {
 	/*
         4. Update Order Status  [Shop | Admin]
     */
-	static async updateOrderStatusByShop() {}
+	static async updateOrderStatusByShop(orderId, payload) {
+		return await updateOrderByAdmin({ orderId, payload });
+	}
 
 	/*
 		5. Query All Order [Admin]

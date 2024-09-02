@@ -14,5 +14,9 @@ router.post(
 	"/cancel/:orderId",
 	asyncHandler(orderController.cancelOrderByUser),
 );
+router.patch(
+	"/update/:order_id",
+	asyncHandler(orderController.updateOrderByAdmin),
+);
 
 module.exports = router;

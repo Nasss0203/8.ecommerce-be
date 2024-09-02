@@ -18,11 +18,12 @@ class OrderController {
 	};
 
 	getOrderByUser = async (req, res, next) => {
+		console.log("req~", req.params);
 		new SuccessResponse({
 			message: " Get Order By User success",
 			metadata: await OrderService.getOrderByUser({
 				orderId: req.params.orderId,
-				userId: req.body.userId,
+				userId: req.query.userId,
 			}),
 		}).send(res);
 	};
@@ -42,6 +43,18 @@ class OrderController {
 		new SuccessResponse({
 			message: "Get All Order By Admin",
 			metadata: await OrderService.getAllOrderByAdmin(req.query),
+		}).send(res);
+	};
+
+	updateOrderByAdmin = async (req, res, next) => {
+		new SuccessResponse({
+			message: "Update order success",
+			metadata: await OrderService.updateOrderStatusByShop(
+				req.params.order_id,
+				{
+					...req.body,
+				},
+			),
 		}).send(res);
 	};
 }

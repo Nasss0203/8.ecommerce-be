@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { convertToObjectIdMongodb } = require("../../utils");
 const { order } = require("../order.model");
+const orderModel = require("../order.model");
 
 const getOneOrderByUser = async (userId) => {
 	return await order
@@ -75,8 +76,16 @@ const getAllOrderByAdmin = async ({
 	};
 };
 
+const updateOrderByAdmin = async ({ orderId, payload, isNew = true }) => {
+	return await order.findByIdAndUpdate(orderId, payload, {
+		new: isNew,
+		timestamps: true,
+	});
+};
+
 module.exports = {
 	getOneOrderByUser,
 	getOrderByUser,
 	getAllOrderByAdmin,
+	updateOrderByAdmin,
 };
